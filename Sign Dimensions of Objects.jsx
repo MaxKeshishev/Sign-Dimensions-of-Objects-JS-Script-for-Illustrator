@@ -37,6 +37,14 @@
     var unitMm = unitsGroup.add("radiobutton", undefined, "mm");
     unitMm.value = true; // default: millimeters
 
+    // Checkbox for zero lengths
+    var zeroCheckbox = dlg.add("checkbox", undefined, "Sign zero lengths");
+    zeroCheckbox.value = false;
+
+    // Explanation text
+    var note = dlg.add("statictext", undefined, "Labels smaller than 5 units are skipped\nunless this option is enabled.");
+    note.alignment = "left";
+
     // OK/Cancel buttons
     var btnGroup = dlg.add("group");
     btnGroup.alignment = "right";
@@ -54,6 +62,8 @@
     if (unitPt.value) unit = "pt";
     if (unitIn.value) unit = "inches";
     if (unitMm.value) unit = "mm";
+
+    var signZeroLengths = zeroCheckbox.value; // boolean
 
     // === Main Logic ===
     var processedCount = 0;
@@ -99,9 +109,13 @@
         var centerX = x1 + widthPt / 2;
         var centerY = y1 - heightPt / 2;
 
-        // Place dimension labels
-        placeWidthLabel(widthVal, suffix, centerX, y1, offset, widthPt);
-        placeHeightLabel(heightVal, suffix, x1, centerY, offset, heightPt);
+        // Place dimension labels only if condition is met
+        if (signZeroLengths || widthVal > 5) {
+            placeWidthLabel(widthVal, suffix, centerX, y1, offset, widthPt);
+        }
+        if (signZeroLengths || heightVal > 5) {
+            placeHeightLabel(heightVal, suffix, x1, centerY, offset, heightPt);
+        }
 
         processedCount++;
     }
